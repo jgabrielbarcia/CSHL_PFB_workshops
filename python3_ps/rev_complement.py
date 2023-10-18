@@ -19,5 +19,7 @@ def reverse_complement(dna_sequence):
 
 dna_rev_complement = reverse_complement(dna_sequence)
 
-print("Original sequence: 5'[]3'\nComplement: 3'[]5'\nReverse complement: 5'[]3'".format(dna_sequence, dna_complement, dna_rev_complement))
+
+
+print("\nOriginal sequence: 5'{} 3'\n\nComplement: 3'{} 5'\n\nReverse complement: 5'{} 3'".format(dna_sequence, dna_complement, dna_rev_complement))
 
