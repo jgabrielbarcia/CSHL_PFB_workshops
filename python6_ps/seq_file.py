@@ -1,4 +1,4 @@
-#! usr/bin/env python3
+#sr/bin/env python3
 
 import sys
 import math

@@ -24,8 +24,77 @@ with open(path_to_bionet_file, "r") as bionet:
       enzymes[enzyme_id] = cut_site 
       count += 1
 
-#Get fasta file and create dictionary of gene_id : seq
-#input_file = sys.argv[1]
+#Get fasta file and create dictionary of gene_id : sequence
+input_file = ''
+genes = {}
+other_info = []
+
+try:
+  input_file = sys.argv[1]
+  print("User provided file name:" , input_file)
+  if not re.match("^.*(\.fa|\.fasta)$", input_file):
+    raise ValueError("This doesn't look like a fasta file")
+  with open(input_file,"r") as fasta_file:
+    for line in fasta_file:
+      line = line.rstrip()
+      if ">" in line:
+        other_info = re.split(r" ", line)
+        gene_id = other_info[0]
+        genes[gene_id] = ''
+      else:
+        genes[gene_id] += line
+except IndexError:
+  print("Please provide a fasta file")
+except IOError as ex:
+  print("Error reading fasta file:" , input_file , ': ' , ex.strerror)
+
+
+#Convert enzyme cut_sites to ACTG format (compatible with fasta file)
+def RE_function(seq):
+    base_dict = {'^':'^','A':'A', 'T':'T', 'C':'C', 'G':'G', 'N':'[ATCG]', 'R':'[GA]', 'Y':'[TC]', 'K':'[GT]', 'M':'[AC]', 'S':'[GC]', 'W':'[AT]', 'B':'[GTC]', 'D':'[GAT]', 'H':'[ACT]', 'V':'[GCA]'}
+    return ''.join([base_dict[nt] for nt in seq])
+
+for enzyme_id in enzymes:
+  enzymes[enzyme_id] = RE_function(enzymes[enzyme_id])
+
+#Find reverse complement of each gene to make sure all cuts are accounted for:
+def reverse_complement(dna_sequence):
+    complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'}
+    return ''.join([complement[base] for base in dna_sequence[::-1]])
+
+genes_rev  = {gene_rev_id: reverse_complement(genes[gene_id]) for gene_rev_id, genes[gene_id] in genes.items()}
+  
+#Remove hats from cut_sites, replace with parentheses
+for enzyme_id in enzymes:
+  enzymes[enzyme_id] = re.sub("(.*)\^(.*)", r"(\1)(\2)", enzymes[enzyme_id])
+
+#Make two new dictionaries (one for regular sequences and one for rev_compl sequences) and add cut sites in the form of hats 
+
+results = {}
+for gene_id in genes:
+  results[gene_id] = {}
+  for enzyme_id in enzymes:
+    if re.match(r"\(", enzymes[enzyme_id]):  
+      gene_hit = re.sub(enzymes[enzyme_id], r"\1^\2", genes[gene_id])
+      if "^" in gene_hit:
+        results[gene_id][enzyme_id] = gene_hit
+        cut_seq = gene_hit.split("^")
+        frag_len = [len(i) for i in cut_seq]
+        print(f'{gene_id} is cut by {enzyme_id}, generating {len(cut_seq)} fragments.\nThe mean fragment length is {sum(frag_len)/len(frag_len):.2f}.\nThe minimum fragment size is {min(frag_len)} and the maximum is {max(frag_len)}\n')
+
+results_rev = {}
+for gene_rev_id in genes_rev:
+  results_rev[gene_rev_id] = {}
+  for enzyme_id in enzymes:
+    if re.match(r"\(", enzymes[enzyme_id]):
+      gene_rev_hit = re.sub(enzymes[enzyme_id], r"\1^\2", genes_rev[gene_rev_id])
+      if "^" in gene_rev_hit:
+        results_rev[gene_rev_id][enzyme_id] = gene_rev_hit
+        cut_rev_seq = gene_rev_hit.split("^")
+        frag_rev_len = [len(i) for i in cut_rev_seq]
+        print(f'The reverse complement of {gene_rev_id} is cut by {enzyme_id}, generating {len(cut_rev_seq)} fragments.\nThe mean fragment length is {sum(frag_rev_len)/len(frag_rev_len):.2f}.\nThe minimum fragment size is {min(frag_rev_len)} and the maximum is {max(frag_rev_len)}\n')
+
+"""
 input_file = "/Users/jgabrielbarcia/problemsets/pfb_problemsets/repo1/python7_ps/Python_07.fasta"
 genes = {}
 other_info = []
@@ -39,58 +108,4 @@ with open(input_file,"r") as fasta_file:
       genes[gene_id] = ''
     else:
       genes[gene_id] += line
-
-#Convert enzyme cut_sites to ACTG format (compatible with fasta file)
-def RE_function(seq):
-    base_dict = {'^':'^','A':'A', 'T':'T', 'C':'C', 'G':'G', 'N':'[ATCG]', 'R':'[GA]', 'Y':'[TC]', 'K':'[GT]', 'M':'[AC]', 'S':'[GC]', 'W':'[AT]', 'B':'[GTC]', 'D':'[GAT]', 'H':'[ACT]', 'V':'[GCA]'}
-    return ''.join([base_dict[nt] for nt in seq])
-
-for enzyme_id in enzymes:
-  enzymes[enzyme_id] = RE_function(enzymes[enzyme_id])
-  #print(enzymes[enzyme_id])
-
-#Put whatever is before and after hats in parenthesis so they can be found in gene sequences
-for enzyme_id in enzymes:
-  for gene_id in genes:
-    enzymes[enzyme_id] = re.sub("(.*)\^(.*)", r"(\1)(\2)", enzymes[enzyme_id])
-    if re.match(r"\(", enzymes[enzyme_id]):  
-      genes[gene_id] = re.sub(enzymes[enzyme_id], r"\1^\2", genes[gene_id])
-      gene_hit = re.search(enzymes[enzyme_id], genes[gene_id])
-      if gene_hit:
-        print(f"Gene {gene_id} contains cut site for enzyme: {enzyme_id}")
-
-"""
-#For every time an enzyme matches a sequence, report both
-
-#enzymes = {'enzyme1':'(AA)(GTGAT)', 'enzyme2':'ATGCT'}    
-#genes = {'gene1':'TCGGSCTAAAGTGAT','gene2':'AGATGATTAGAT'}
-
-pattern_test = r'(AA)(GTGAT)'
-#Insert hats into gene sequences
-for gene_id in genes:
-   genes[gene_id] = re.sub(pattern_test, r"\1^\2", genes[gene_id])
-   print(genes[gene_id])
-
-for gene_id in genes:
-  for enzyme_id in enzymes:
-    gene_hit = re.search(enzymes[enzyme_id], genes[gene_id])
-    seq_list = re.split("\^", genes[gene_id])
-    print("Unsorted Fragments:", "\t".join(seq_list))
-    if gene_hit != None:  
-     print(f"Gene {gene_id} contains cut site for enzyme: {enzyme_id}")
-
-for header in fasta_dict:
-   fasta_dict[header] = re.sub(enzymes[my_enzyme] , r"\1^\2" , fasta_dict[header])
-
-
-# print out FASTA dictionary
-for header in fasta_dict:
-  print("SeqName:", header)
-  print("Sequence:", fasta_dict[header])
-  seq_list = re.split("\^", fasta_dict[header])
-  print("Unsorted Fragments:", "\t".join(seq_list))
-  sorted_seqs = sorted(seq_list, key=len, reverse=True)
-  print("Number of Fragments:", len(seq_list))
-  print("Sorted Fragments:", "\t".join(sorted_seqs))
-
 """
