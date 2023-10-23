@@ -94,18 +94,3 @@ for gene_rev_id in genes_rev:
         frag_rev_len = [len(i) for i in cut_rev_seq]
         print(f'The reverse complement of {gene_rev_id} is cut by {enzyme_id}, generating {len(cut_rev_seq)} fragments.\nThe mean fragment length is {sum(frag_rev_len)/len(frag_rev_len):.2f}.\nThe minimum fragment size is {min(frag_rev_len)} and the maximum is {max(frag_rev_len)}\n')
 
-"""
-input_file = "/Users/jgabrielbarcia/problemsets/pfb_problemsets/repo1/python7_ps/Python_07.fasta"
-genes = {}
-other_info = []
-
-with open(input_file,"r") as fasta_file:
-  for line in fasta_file:
-    line = line.rstrip()
-    if ">" in line:
-      other_info = re.split(r" ", line)
-      gene_id = other_info[0]
-      genes[gene_id] = ''
-    else:
-      genes[gene_id] += line
-"""
