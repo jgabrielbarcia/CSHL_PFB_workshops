@@ -1,0 +1,28 @@
+
+Found perl:
+   /usr/bin/perl
+   This is perl 5, version 30, subversion 3 (v5.30.3) built for darwin-thread-multi-2level
+
+Found java:
+   /usr/bin/java
+   java version "21.0.1" 2023-10-17 LTS
+
+Found canu:
+   /Users/jgabrielbarcia/repo1/genome_assembly_ps/canu-2.2/bin/canu
+   canu 2.2
+
+Running job 2 based on command line options.
+
+Attempting to increase maximum allowed processes and open files.
+  Changed max processes per user from 2666 to 2666 (max 4000).
+./scripts/1-bucketize.sh: line 78: [: unlimited: integer expression expected
+  Max open files limited to 256, no increase possible.
+
+
+Opened '../ecoli.seqStore' with 12528 reads.
+
+Constructing slice 2 for store './ecoli.ovlStore.BUILDING'.
+ - Filtering overlaps over 1.0000 fraction error.
+
+Bucketizing input    1 out of    1 - '1-overlapper/001/000002.ovb'
+Success!

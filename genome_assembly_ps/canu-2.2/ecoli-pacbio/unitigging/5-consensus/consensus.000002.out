@@ -1,0 +1,30 @@
+
+Found perl:
+   /usr/bin/perl
+   This is perl 5, version 30, subversion 3 (v5.30.3) built for darwin-thread-multi-2level
+
+Found java:
+   /usr/bin/java
+   java version "21.0.1" 2023-10-17 LTS
+
+Found canu:
+   /Users/jgabrielbarcia/repo1/genome_assembly_ps/canu-2.2/bin/canu
+   canu 2.2
+
+Running job 2 based on command line options.
+-- Using seqFile '../ecoli.ctgStore/partition.0002'.
+-- Opening tigStore '../ecoli.ctgStore' version 1.
+-- Opening output results file './ctgcns/0002.cns.WORKING'.
+--
+-- Computing consensus for b=0 to e=3 with errorRate 0.0750 (max 0.4000) and minimum overlap 500
+--
+Loading corrected-trimmed reads from seqFile '../ecoli.ctgStore/partition.0002'
+Consensus finished successfully.
+
+Bye.
+                           ----------CONTAINED READS----------  -DOVETAIL  READS-
+  tigID    length   reads      used coverage  ignored coverage      used coverage
+------- --------- -------  -------- -------- -------- --------  -------- --------
+
+Processed 0 tigs and 2 singletons.
+

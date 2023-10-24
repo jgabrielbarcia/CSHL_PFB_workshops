@@ -24,7 +24,7 @@ dna_sequence_AT = dna_sequence_upper.count('A') + dna_sequence_upper.count('T')
 AT_content = dna_sequence_AT/len(dna_sequence_upper)*100
 
 dna_sequence_GC = dna_sequence_upper.count('G') + dna_sequence_upper.count('C')
-GC_content = dna_sequence_GC/len(dna_sequence_upper)*100
+
 
 dna_substring = dna_sequence_upper[99:199] 
 dna_substring_GC = dna_substring.count('G')
